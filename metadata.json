@@ -1,0 +1,7 @@
+{
+  "name": "CapyContrato Elite",
+  "description": "Seu assistente IA especializado na geração de modelos de contrato de alta fidelidade.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
