@@ -3,14 +3,37 @@ import { GoogleGenAI } from "@google/genai";
 import { ContractDetails } from "../types";
 
 export class GeminiService {
+  private apiKey: string | null = null;
+
+  constructor() {
+    // Preferência: chave do usuário (local) > env build-time
+    if (typeof window !== 'undefined') {
+      this.apiKey = window.localStorage.getItem('capy_gemini_api_key');
+    }
+  }
+
+  setApiKey(key: string) {
+    this.apiKey = key;
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('capy_gemini_api_key', key);
+    }
+  }
+
+  getApiKey() {
+    return this.apiKey || (process.env.API_KEY as unknown as string | undefined) || undefined;
+  }
+
   // Creating a new instance of GoogleGenAI for each request to ensure fresh API key context
   private getClient() {
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const key = this.getApiKey();
+    if (!key) throw new Error('Missing Gemini API key');
+    return new GoogleGenAI({ apiKey: key });
   }
 
   // Basic validation using gemini-3-flash-preview
-  async validateKey(): Promise<boolean> {
+  async validateKey(manualKey?: string): Promise<boolean> {
     try {
+      if (manualKey) this.setApiKey(manualKey);
       const ai = this.getClient();
       // Using gemini-3-flash-preview for quick and cost-effective validation
       await ai.models.generateContent({

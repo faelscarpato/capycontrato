@@ -84,10 +84,11 @@ export default function App() {
     }
   };
 
-  const handleKeySelected = async () => {
+  const handleKeySelected = async (manualKey?: string) => {
     setIsValidatingKey(true);
     try {
-      const isValid = await checkApiKey();
+      const isValid = await gemini.validateKey(manualKey);
+      setIsApiKeyActive(isValid);
       if (isValid) {
         addToast("Chave validada e ativa!", "success");
         setShowKeyModal(false);
